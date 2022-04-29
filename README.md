@@ -6,6 +6,9 @@ framework, etc.
 
 Enter gonsen!
 
+![Todo
+example](https://user-images.githubusercontent.com/5923958/165977983-86e2452e-1277-41e4-9844-91a9018aceb7.png)
+
 ## What is it?
 
 Gonsen is a simple templating system that lets you write HTML pages using Go
@@ -50,10 +53,16 @@ example shows.
 
 ## Trying it out
 
-`make`
+`make` will run [the basic example](./examples/basic).
 
 ## Where this could go
 
 This is really just a simple wrapper for now, and it's almost more a proof of
 concept than a proper library.  Is there room for it to grow into something
 more?  Let me know in the Discussions tab if you have any thoughts!
+
+## What's with the name?
+
+I didn't want a [SPA](https://developer.mozilla.org/en-US/docs/Glossary/SPA),
+I wanted to build an
+[温泉](https://en.wikipedia.org/wiki/Onsen) instead.
