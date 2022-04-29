@@ -1,10 +1,12 @@
-# gonsen
+# Gonsen
 
-Sometimes, you want to build a service with a basic web interface, but you don't
-want to have to deal with building a full API and spin up a SPA with some heavy
-framework, etc.
+Sometimes, you want to build a service with a basic web interface that deals
+with dynamic data, but you don't want to have to deal with building a full API
+and spin up a SPA with some heavy framework, etc.  Instead, you'd rather just
+build pages using Go templates and easily feed them data from a backing
+repository.
 
-Enter gonsen!
+Enter Gonsen!
 
 ![Todo
 example](https://user-images.githubusercontent.com/5923958/165977983-86e2452e-1277-41e4-9844-91a9018aceb7.png)
