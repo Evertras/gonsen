@@ -1,0 +1,20 @@
+{{ define "style" }}
+.completed {
+  text-decoration: line-through;
+}
+
+.incomplete {
+  font-weight: bold;
+}
+{{ end }}
+
+{{ define "body" }}
+<h1>Task list</h1>
+<ul>
+{{ range . }}
+  <li class="{{ if .Completed }}completed{{ else }}incomplete{{ end }}">
+    <a href="/task/{{ .ID }}">{{ .Description }}</a>
+  </li>
+{{ end }}
+</ul>
+{{ end }}
