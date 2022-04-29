@@ -4,7 +4,7 @@ Sometimes, you want to build a service with a basic web interface that deals
 with dynamic data, but you don't want to have to deal with building a full API
 and spin up a SPA with some heavy framework, etc.  Instead, you'd rather just
 build pages using Go templates and easily feed them data from a backing
-repository.
+repository in a type-safe manner.
 
 Enter Gonsen!
 
