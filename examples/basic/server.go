@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"strconv"
@@ -39,6 +40,15 @@ func newServer() *server {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write(staticPageHome)
 	})
+
+	assetFS, err := fs.Sub(siteFiles, "site")
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Assets are all static files
+	mux.Handle("/assets/", http.FileServer(http.FS(assetFS)))
 
 	mux.HandleFunc("/task", pageTaskList.HandlerWithSource(func(r *http.Request) ([]Task, int) {
 		tasks, err := repository.GetTasks()

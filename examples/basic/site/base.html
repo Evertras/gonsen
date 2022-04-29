@@ -17,6 +17,11 @@
     <link rel="icon" type="image/png" href="/assets/favicon.png">
 
   <style>
+    #menu-gopher {
+      width: 32px;
+      height: 32px;
+    }
+    
     {{template "style" .}}
   </style>
 
@@ -26,6 +31,7 @@
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li><img id="menu-gopher" src="/assets/favicon.png" /></li>
           <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
           <li><a href="/task" class="nav-link px-2 text-white">Task List</a></li>
         </ul>

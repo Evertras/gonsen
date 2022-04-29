@@ -23,6 +23,8 @@ something like Gorilla Mux or other routing frameworks that already exist.
 
 ## How it works
 
+For a code example to follow, see [the basic example](./examples/basic).
+
 Gonsen is intended to be used with the `embed` standard package.  You supply a
 basic skeletal structure of what your pages should look like, and then each page
 can be defined as simpler components similar to something like Vue.
@@ -30,6 +32,21 @@ can be defined as simpler components similar to something like Vue.
 The skeletal structure can include any number of subcomponents.  The basic
 example includes subcomponents for style, scripts, and the main HTML body, but
 you could add other subcomponents for a more dynamic menu, etc.
+
+The given filesystem must be in the following structure:
+
+```
+site
+ |-> pages/
+ |   |-> page1.html
+ |   |-> another.html
+ |-> base.html
+```
+
+The `base.html` file is used as the base template, and all files found in
+`pages` will use `base.html`.  Any other directories are ignored by Gonsen, but
+it can be useful to include static assets and such in other directories as the
+example shows.
 
 ## Trying it out
 
@@ -39,4 +56,4 @@ you could add other subcomponents for a more dynamic menu, etc.
 
 This is really just a simple wrapper for now, and it's almost more a proof of
 concept than a proper library.  Is there room for it to grow into something
-more?  Let me know in Discussions tab if you have any thoughts!
+more?  Let me know in the Discussions tab if you have any thoughts!
