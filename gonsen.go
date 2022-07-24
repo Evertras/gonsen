@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
+	"net/http"
 )
 
 const (
@@ -25,6 +26,16 @@ func NewSource(templates fs.FS) *Source {
 	}
 
 	return g
+}
+
+func (s *Source) AssetsHandler() http.Handler {
+	assetFS, err := fs.Sub(s.templates, "site")
+
+	if err != nil {
+		panic(err)
+	}
+
+	return http.FileServer(http.FS(assetFS))
 }
 
 func mustReadFileString(fs fs.FS, file string) string {
