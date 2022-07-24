@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"fmt"
-	"io/fs"
 	"log"
 	"net/http"
 	"strconv"
@@ -66,15 +65,7 @@ func newServer() *server {
 
 	mux.Handle("/", pageHome)
 
-	assetFS, err := fs.Sub(siteFiles, "site")
-
-	if err != nil {
-		panic(err)
-	}
-
-	// Assets are all static files
-	mux.Handle("/assets/", http.FileServer(http.FS(assetFS)))
-
+	mux.Handle("/assets/", source.AssetsHandler())
 	mux.Handle("/task", pageTaskList)
 	mux.Handle("/task/", pageTaskDetails)
 
