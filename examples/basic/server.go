@@ -29,28 +29,9 @@ func newServer() *server {
 	source := gonsen.NewSource(siteFiles)
 
 	// Define the pages and the data types they use
-	staticPageHome := gonsen.MustRenderStaticPage(source, "index.html")
-	pageTaskList := gonsen.NewPage[[]Task](source, "list.html")
-	pageTaskDetails := gonsen.NewPage[Task](source, "details.html")
+	pageHome := gonsen.NewStaticPage(source, "index.html")
 
-	// Now build a simple standard mux... this could be any router framework,
-	// but for simplicity we'll use the standard library here
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write(staticPageHome)
-	})
-
-	assetFS, err := fs.Sub(siteFiles, "site")
-
-	if err != nil {
-		panic(err)
-	}
-
-	// Assets are all static files
-	mux.Handle("/assets/", http.FileServer(http.FS(assetFS)))
-
-	mux.HandleFunc("/task", pageTaskList.HandlerWithSource(func(r *http.Request) ([]Task, int) {
+	pageTaskList := gonsen.NewPage(source, "list.html", func(r *http.Request) ([]Task, int) {
 		tasks, err := repository.GetTasks()
 
 		if err != nil {
@@ -58,9 +39,9 @@ func newServer() *server {
 		}
 
 		return tasks, http.StatusOK
-	}))
+	})
 
-	mux.HandleFunc("/task/", pageTaskDetails.HandlerWithSource(func(r *http.Request) (Task, int) {
+	pageTaskDetails := gonsen.NewPage(source, "details.html", func(r *http.Request) (Task, int) {
 		id, err := getTrailingID(r)
 
 		if err != nil {
@@ -77,7 +58,25 @@ func newServer() *server {
 		}
 
 		return task, http.StatusOK
-	}))
+	})
+
+	// Now build a simple standard mux... this could be any router framework,
+	// but for simplicity we'll use the standard library here
+	mux := http.NewServeMux()
+
+	mux.Handle("/", pageHome)
+
+	assetFS, err := fs.Sub(siteFiles, "site")
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Assets are all static files
+	mux.Handle("/assets/", http.FileServer(http.FS(assetFS)))
+
+	mux.Handle("/task", pageTaskList)
+	mux.Handle("/task/", pageTaskDetails)
 
 	mux.HandleFunc("/complete/", func(w http.ResponseWriter, r *http.Request) {
 		id, err := getTrailingID(r)
