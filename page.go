@@ -8,6 +8,7 @@ import (
 )
 
 type Page[T interface{}, C interface{}] struct {
+	source     *Source
 	template   *template.Template
 	dataSource func(r *http.Request) (T, int)
 	ctxSource  func(r *http.Request) (C, int)
@@ -39,6 +40,7 @@ func NewPageWithContext[T interface{}, C interface{}](
 	clone := template.Must(source.base.Clone())
 
 	return &Page[T, C]{
+		source:     source,
 		template:   template.Must(clone.Parse(fileContents)),
 		dataSource: dataSource,
 		ctxSource:  ctxSource,
@@ -52,7 +54,11 @@ func (p *Page[T, C]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		data, statusCode = p.dataSource(r)
 
 		if statusCode != 200 {
-			w.WriteHeader(statusCode)
+			if do, ok := p.source.statusCodeBehavior[statusCode]; ok {
+				do(w, r)
+			} else {
+				w.WriteHeader(statusCode)
+			}
 			return
 		}
 	}
@@ -64,7 +70,11 @@ func (p *Page[T, C]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ctx, statusCode = p.ctxSource(r)
 
 		if statusCode != 200 {
-			w.WriteHeader(statusCode)
+			if do, ok := p.source.statusCodeBehavior[statusCode]; ok {
+				do(w, r)
+			} else {
+				w.WriteHeader(statusCode)
+			}
 			return
 		}
 	}
@@ -73,7 +83,11 @@ func (p *Page[T, C]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		// TODO: This probably shouldn't happen... better way to handle/notify?
-		w.WriteHeader(500)
+		if do, ok := p.source.statusCodeBehavior[http.StatusInternalServerError]; ok {
+			do(w, r)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 

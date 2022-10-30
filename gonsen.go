@@ -15,17 +15,24 @@ const (
 )
 
 type Source struct {
-	templates fs.FS
-	base      *template.Template
+	templates          fs.FS
+	base               *template.Template
+	statusCodeBehavior map[int]func(w http.ResponseWriter, r *http.Request)
 }
 
 func NewSource(templates fs.FS) *Source {
 	g := &Source{
 		base:      template.Must(template.New(TemplateNameBase).Parse(mustReadFileString(templates, BaseFilename))),
 		templates: templates,
+
+		statusCodeBehavior: make(map[int]func(w http.ResponseWriter, r *http.Request)),
 	}
 
 	return g
+}
+
+func (s *Source) OnStatus(code int, do func(w http.ResponseWriter, r *http.Request)) {
+	s.statusCodeBehavior[code] = do
 }
 
 func (s *Source) AssetsHandler() http.Handler {

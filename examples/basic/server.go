@@ -27,6 +27,14 @@ func newServer() *server {
 	repository := NewRepository()
 	source := gonsen.NewSource(siteFiles)
 
+	source.OnStatus(http.StatusBadRequest, func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	})
+
+	source.OnStatus(http.StatusNotFound, func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	})
+
 	// Should actually get a user to be useful, but for demo purposes this is fine
 	getContext := func(r *http.Request) (User, int) {
 		return User{
