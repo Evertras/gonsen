@@ -1,7 +1,7 @@
 {{ define "style" }}
   // This is COMPELTELY unnecessary, but just to show that you can in theory
   // even template your CSS for the page...
-  {{ if .Completed }}
+  {{ if .Data.Completed }}
   .completed {
     font-weight: bold;
   }
@@ -9,22 +9,22 @@
 {{ end }}
 
 {{ define "body" }}
-  <h1>{{ .Description }}</h1>
-  <p>Due: {{ .Due }}</p>
-  {{ if .Completed }}
-    <p class="completed">All done!</p>
+  <h1>{{ .Data.Description }}</h1>
+  <p>Due: {{ .Data.Due }}</p>
+  {{ if .Data.Completed }}
+    <p class="completed">All done!  Good job {{.Context.Name}}!</p>
   {{ else }}
     <button id="complete-button" class="btn btn-primary" type="button">Complete</button>
   {{ end}}
 {{ end }}
 
 {{ define "script" }}
-  {{ if not .Completed }}
+  {{ if not .Data.Completed }}
   $('#complete-button').on('click', function() {
     // We can inject values here easily too
-    $.post("/complete/{{ .ID }}", function(data, status) {
+    $.post("/complete/{{ .Data.ID }}", function(data, status) {
       if (status == "success") {
-        document.location.href = "/task/{{ .ID }}";
+        document.location.href = "/task/{{ .Data.ID }}";
       } else {
         console.log(status);
       }

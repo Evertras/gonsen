@@ -27,37 +27,54 @@ func newServer() *server {
 	repository := NewRepository()
 	source := gonsen.NewSource(siteFiles)
 
+	// Should actually get a user to be useful, but for demo purposes this is fine
+	getContext := func(r *http.Request) (User, int) {
+		return User{
+			Name: "Gonsen User",
+		}, http.StatusOK
+	}
+
 	// Define the pages and the data types they use
-	pageHome := gonsen.NewStaticPage(source, "index.html")
+	pageHome := gonsen.NewStaticPageWithContext(source, "index.html", getContext)
 
-	pageTaskList := gonsen.NewPage(source, "list.html", func(r *http.Request) ([]Task, int) {
-		tasks, err := repository.GetTasks()
+	pageTaskList := gonsen.NewPageWithContext(
+		source,
+		"list.html",
+		func(r *http.Request) ([]Task, int) {
+			tasks, err := repository.GetTasks()
 
-		if err != nil {
-			return nil, http.StatusInternalServerError
-		}
+			if err != nil {
+				return nil, http.StatusInternalServerError
+			}
 
-		return tasks, http.StatusOK
-	})
+			return tasks, http.StatusOK
+		},
+		getContext,
+	)
 
-	pageTaskDetails := gonsen.NewPage(source, "details.html", func(r *http.Request) (Task, int) {
-		id, err := getTrailingID(r)
+	pageTaskDetails := gonsen.NewPageWithContext(
+		source,
+		"details.html",
+		func(r *http.Request) (Task, int) {
+			id, err := getTrailingID(r)
 
-		if err != nil {
-			log.Printf("Failed to get ID from request: %v", err)
-			return Task{}, http.StatusBadRequest
-		}
+			if err != nil {
+				log.Printf("Failed to get ID from request: %v", err)
+				return Task{}, http.StatusBadRequest
+			}
 
-		task, err := repository.GetTask(int(id))
+			task, err := repository.GetTask(int(id))
 
-		if err != nil {
-			// Assume it's "not found" out of laziness, but a real system should have
-			// more checks than this...
-			return task, http.StatusNotFound
-		}
+			if err != nil {
+				// Assume it's "not found" out of laziness, but a real system should have
+				// more checks than this...
+				return task, http.StatusNotFound
+			}
 
-		return task, http.StatusOK
-	})
+			return task, http.StatusOK
+		},
+		getContext,
+	)
 
 	// Now build a simple standard mux... this could be any router framework,
 	// but for simplicity we'll use the standard library here

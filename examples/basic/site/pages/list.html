@@ -9,9 +9,9 @@
 {{ end }}
 
 {{ define "body" }}
-<h1>Task list</h1>
+<h1>Task list for {{ .Context.Name }}</h1>
 <ul>
-{{ range . }}
+{{ range .Data }}
   <li class="{{ if .Completed }}completed{{ else }}incomplete{{ end }}">
     <a href="/task/{{ .ID }}">{{ .Description }}</a>
   </li>
