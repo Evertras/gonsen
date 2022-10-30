@@ -81,6 +81,14 @@ func (p *Page[T, C]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
+// AsHttpHandlerFunc returns a http.HandlerFunc for certain APIs that don't want
+// a full http.Handler
+func (p *Page[T, C]) AsHttpHandlerFunc() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p.ServeHTTP(w, r)
+	}
+}
+
 type pageData struct {
 	Data    interface{}
 	Context interface{}

@@ -28,3 +28,9 @@ func (p *StaticPage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	addHtmlHeaders(w)
 	w.Write(p.contents)
 }
+
+func (p *StaticPage) AsHttpHandlerFunc() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		p.ServeHTTP(w, r)
+	}
+}
