@@ -82,7 +82,10 @@ func (p *Page[T, C]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	body, err := p.render(data, ctx)
 
 	if err != nil {
-		// TODO: This probably shouldn't happen... better way to handle/notify?
+		if p.source.onRenderErrorBehavior != nil {
+			p.source.onRenderErrorBehavior(r, err)
+		}
+
 		if do, ok := p.source.statusCodeBehavior[http.StatusInternalServerError]; ok {
 			do(w, r)
 		} else {

@@ -15,9 +15,10 @@ const (
 )
 
 type Source struct {
-	templates          fs.FS
-	base               *template.Template
-	statusCodeBehavior map[int]func(w http.ResponseWriter, r *http.Request)
+	templates             fs.FS
+	base                  *template.Template
+	statusCodeBehavior    map[int]func(w http.ResponseWriter, r *http.Request)
+	onRenderErrorBehavior func(r *http.Request, err error)
 }
 
 func NewSource(templates fs.FS) *Source {
@@ -25,7 +26,8 @@ func NewSource(templates fs.FS) *Source {
 		base:      template.Must(template.New(TemplateNameBase).Parse(mustReadFileString(templates, BaseFilename))),
 		templates: templates,
 
-		statusCodeBehavior: make(map[int]func(w http.ResponseWriter, r *http.Request)),
+		statusCodeBehavior:    make(map[int]func(w http.ResponseWriter, r *http.Request)),
+		onRenderErrorBehavior: nil,
 	}
 
 	return g
@@ -33,6 +35,10 @@ func NewSource(templates fs.FS) *Source {
 
 func (s *Source) OnStatus(code int, do func(w http.ResponseWriter, r *http.Request)) {
 	s.statusCodeBehavior[code] = do
+}
+
+func (s *Source) OnRenderError(do func(r *http.Request, err error)) {
+	s.onRenderErrorBehavior = do
 }
 
 func (s *Source) AssetsHandler() http.Handler {
